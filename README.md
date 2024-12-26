@@ -42,3 +42,34 @@ Follow the steps below to get this project up and running:
    ```bash
    git clone https://github.com/yourusername/cricket-statistics-pipeline.git
    ```
+
+## 📈 Data Collection
+
+Data collection is performed through a Python script that scrapes cricket statistics from the Cricbuzz API.
+
+👉 Cricbuzz API Documentation
+
+## 📊 Looker Studio Dashboard
+
+Once the data is collected and processed, you can explore our interactive dashboard built with Looker Studio. The dashboard provides insights and visualizations of the cricket match data, including:
+
+Match Trends: Visual representation of match outcomes over time.
+Team Performance: Analysis of individual team performance metrics.
+Score Insights: Overview of score distributions among matches.
+You can access the dashboard through the Looker Studio interface once the data is loaded.
+
+Insert your Looker Studio image below (if you have one):
+Looker
+
+## 🤝 Contributing
+
+Contributions are welcome! Feel free to open an issue or submit a pull request.
+
+## 👤 Authors
+
+Your Name
+Additional contributors or inspirations can be listed here.
+
+## 📝 License
+
+This project is licensed under the MIT License. For more details, please refer to the LICENSE file.
