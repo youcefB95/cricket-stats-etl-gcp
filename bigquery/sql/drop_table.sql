@@ -1,0 +1,1 @@
+DROP TABLE `cricket-stats-etl-gcp.cricket_dataset.date_dim` ;
