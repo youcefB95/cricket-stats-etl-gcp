@@ -1,0 +1,41 @@
+# Environnement virtuel  
+venv/  
+ 
+# Dossier de build  
+build/  
+dist/  
+
+# Python bytecode  
+__pycache__/  
+*.py[cod]  
+# Répertoire de paramètres et d'artéfacts de tests  
+*.egg-info/  
+pip-wheel-metadata/ 
+
+# Fichiers de configuration  
+*.env  
+*.local  
+*.log  
+
+# Jupyter Notebook Checkpoints  
+.ipynb_checkpoints/  
+# Pytest  
+.cache/  
+# Configuration de l'éditeur (par exemple, pour PyCharm)  
+.idea/  
+*.iml  
+# Configuration de VS Code  
+.vscode/  
+# Fichiers de sauvegarde pour Emacs  
+*~  
+# Fichiers de sauvegarde pour Vim  
+*.swp  
+# Fichiers de sortie  
+*.out  
+*.o  
+# Fichiers de cache de PyInstaller  
+*.manifest  
+*.spec  
+# fichiers de configuration IDE / Éditeurs  
+*.sublime-workspace  
+*.sublime-project
