@@ -31,9 +31,8 @@ def get_existing_dates(output_date_dim):
         logging.error(f"Erreur lors de la récupération des dates existantes : {e}")  
         return []  # Retourne une liste vide si une erreur se produit  
 
-
 class ProcessCSV(beam.DoFn):  
-    def __init__(self, existing_dates):  
+    def __init__(self, existing_dates):  # Recevoir les dates existantes comme paramètre  
         self.existing_dates = existing_dates  
 
     def process(self, element):  
@@ -53,53 +52,38 @@ class ProcessCSV(beam.DoFn):
         player_dim['first_name'] = player_dim['name'].apply(lambda x: x.split(" ")[0])  
         player_dim['last_name'] = player_dim['name'].apply(lambda x: " ".join(x.split(" ")[1:]))  
         player_dim.rename(columns={'id': 'player_id'}, inplace=True)  
-        player_dim = player_dim[['player_id', 'first_name', 'last_name']].drop_duplicates()  
+        player_dim = player_dim[['player_id', 'first_name', 'last_name']]  
 
-        country_dim = data[["countryId", "country"]].drop_duplicates().copy()  
-        country_dim.rename(columns={"countryId": "country_id"}, inplace=True)  
+        country_dim = data[['countryId', 'country']].drop_duplicates().copy()  
+        country_dim.rename(columns={'countryId': 'country_id'}, inplace=True)  
 
-        # Conversion de lastUpdatedOn en datetime compatible avec BigQuery  
         data['lastUpdatedOn'] = pd.to_datetime(data['lastUpdatedOn'], errors='coerce')  
-
         date_dim = pd.DataFrame({  
-            'date': data['lastUpdatedOn'].drop_duplicates()  
+            'date_id': range(1, len(data['lastUpdatedOn'].drop_duplicates()) + 1),  
+            'date': data['lastUpdatedOn'].drop_duplicates().reset_index(drop=True)  
         })  
-        # Conversion explicite des dates vers un format compatible avec BigQuery  
-        #date_dim['date'] = date_dim['date'].dt.to_pydatetime()  
-        # Formatage pour BigQuery (au format chaîne 'YYYY-MM-DD')  
-         
-        date_dim['date_id'] = range(1, len(date_dim) + 1)  
         date_dim['day_of_week'] = date_dim['date'].dt.day_name()  
         date_dim['month'] = date_dim['date'].dt.month  
         date_dim['year'] = date_dim['date'].dt.year  
-        date_dim['date'] = date_dim['date'].dt.strftime('%Y-%m-%d')  # Formatage pour BigQuery
-        date_dim = date_dim[["date_id", "date", "day_of_week", "month", "year"]]
 
         # Filtrer les dates qui n'existent pas déjà  
-        new_dates = date_dim[~date_dim['date'].isin(self.existing_dates)].drop_duplicates(subset=['date'])  
+        new_dates = date_dim[~date_dim['date'].isin(self.existing_dates)]  
 
-        if new_dates.empty:  
+        if new_dates.empty:  # Vérifiez si new_dates est vide  
             logging.info("Aucune nouvelle date à insérer, aucune donnée ne sera retournée.")  
-            return  
+            return  # Si new_dates est vide, ne rien faire (retourner sans yield)  
 
         rankings = data[['id', 'countryId', 'rank', 'rating', 'points', 'difference', 'lastUpdatedOn', 'trend']].copy()  
         rankings.rename(columns={'id': 'player_id', 'countryId': 'country_id'}, inplace=True)  
-        
-        # Assurez-vous que lastUpdatedOn est de type date 
-        rankings['lastUpdatedOn'] = rankings['lastUpdatedOn'].dt.strftime('%Y-%m-%d') 
-
         rankings = rankings.merge(new_dates, left_on='lastUpdatedOn', right_on='date', how='left')  
         rankings = rankings[["player_id", "country_id", "date_id", "rank", "rating", "points", "difference", "trend"]]  
-        rankings.drop_duplicates(inplace=True)
-        
-        logging.info("date_dim shape is : {}".format(date_dim.shape))  
 
         # Écrire dans des dictionnaires pour BigQuery  
         for r in player_dim.to_dict(orient='records'):  
             yield {'type': 'player', 'data': r}  
         for r in country_dim.to_dict(orient='records'):  
             yield {'type': 'country', 'data': r}  
-        for r in new_dates.to_dict(orient='records'):  
+        for r in new_dates.to_dict(orient='records'):  # Utiliser new_dates ici  
             yield {'type': 'date', 'data': r}  
         for r in rankings.to_dict(orient='records'):  
             yield {'type': 'ranking', 'data': r}  
@@ -108,9 +92,11 @@ def filter_header(line):
     return not line.startswith('id,')  
 
 def run(config_file='config.ini'):  
+    # Lire le fichier de configuration  
     config = configparser.ConfigParser()  
     config.read(config_file)  
 
+    # Récupérer les arguments de configuration  
     project = config['DEFAULT']['project']  
     region = config['DEFAULT']['region']  
     runner = config['DEFAULT']['runner']  
@@ -123,8 +109,10 @@ def run(config_file='config.ini'):
     output_rankings = config['DEFAULT']['output_rankings']  
     save_main_session = config.getboolean('DEFAULT', 'save_main_session')  
 
+    # Obtenir les dates existantes avant de démarrer le pipeline  
     existing_dates = get_existing_dates(output_date_dim)  
 
+    # Ajoutez les arguments personnalisés à PipelineOptions  
     options = PipelineOptions(  
         runner=runner,  
         project=project,  
@@ -139,7 +127,7 @@ def run(config_file='config.ini'):
             pipeline  
             | 'ReadFromCSV' >> beam.io.ReadFromText(input_file)  
             | 'FilterHeader' >> beam.Filter(filter_header)  
-            | 'ProcessCSV' >> beam.ParDo(ProcessCSV(existing_dates))  
+            | 'ProcessCSV' >> beam.ParDo(ProcessCSV(existing_dates))  # Pass the existing dates to the DoFn  
         )  
 
         (  
@@ -170,18 +158,9 @@ def run(config_file='config.ini'):
             rows  
             | 'FilterDate' >> beam.Filter(lambda x: x['type'] == 'date')  
             | 'ExtractDateData' >> beam.Map(lambda x: x['data'])  
-            | 'ConvertToTuple' >> beam.Map(lambda x: (x['date_id'], x['date'], x['day_of_week'], x['month'], x['year']))  # Convertir en tuple  
-            | 'DeduplicateDates' >> beam.Distinct()   
-            | 'ConvertBackToDict' >> beam.Map(lambda x: {  
-                    'date_id': x[0],  
-                    'date': x[1],  
-                    'day_of_week': x[2],  
-                    'month': x[3],  
-                    'year': x[4]  
-                })  
             | 'WriteDateToBQ' >> WriteToBigQuery(  
                 output_date_dim,  
-                schema='date_id:INTEGER,date:DATE,day_of_week:STRING,month:INTEGER,year:INTEGER',  
+                schema='date_id:INTEGER,date:DATETIME,day_of_week:STRING,month:INTEGER,year:INTEGER',  
                 create_disposition=beam.io.BigQueryDisposition.CREATE_IF_NEEDED,  
                 write_disposition=beam.io.BigQueryDisposition.WRITE_APPEND  
             )  

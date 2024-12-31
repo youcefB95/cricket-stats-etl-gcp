@@ -86,7 +86,7 @@ def create_table_in_bigquery():
     # Requête SQL pour créer la table analytics
     sql = f"""
     CREATE OR REPLACE TABLE `{project_id}.{dataset_id}.{table_id}` AS
-    SELECT
+    SELECT DISTINCT
         r.player_id,
         r.country_id,
         r.date_id,

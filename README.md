@@ -6,56 +6,114 @@ Welcome to our cricket statistics project that collects and processes data on **
 
 ## 🏗️ Project Architecture
 
-![Project Architecture](images/etl-architecture.png)
+![Project Architecture](images/architecture.png)
 
 ## ⚙️ Technologies Used
 
 - **Python**: For data retrieval from the Cricbuzz API.
-- **Apache Airflow**: For orchestrating data collection and processing.
+- **Composer**: For orchestrating data collection and processing.
+- **Cloud Function** : Automates table creation and data queries.
 - **Google Cloud Storage (GCS)**: For storing data files.
 - **Google BigQuery**: For data storage and analysis.
 - **Looker Studio**: For data visualization.
+- **Pub/sub**: Triggers notifications to Cloud Functions after successful processing.
 
 ## 📊 Data Modeling
 
 The data collected from the Cricbuzz API is structured into a schema suitable for analysis. Here’s a brief overview of the data model:
 
-- **Matches Table**:
+- **Rankings Table**:
 
-  - **match_id** (Primary Key): Unique identifier for each match.
-  - **team1**: The first team playing in the match.
-  - **team2**: The second team playing in the match.
-  - **date**: Date of the match.
-  - **venue**: Venue where the match is held.
-  - **score**: Final scores of both teams.
-  - **result**: Outcome of the match.
+  - **rank_id** (Primary Key): Unique identifier for each rank.
+  - **player_id**
+    ...
 
 Insert your data modeling diagram below (if you have one):  
-![Data Model](images/data_model.png)
+![Data Model](images/diagram_sql.png)
 
 ## 🚀 Installation and Launch
 
 Follow the steps below to get this project up and running:
 
-1. **Clone the repository:**
+### 1. Clone the repository
 
-   ```bash
-   git clone https://github.com/yourusername/cricket-statistics-pipeline.git
-   ```
+```bash
+git clone https://github.com/yourusername/cricket-statistics-pipeline.git
+```
 
-   - Créer un bucket dans GCS => bkt-ranking-data-ycb
-   - Activer l'API de GCS
-   - Créer un compte de service pour ce projet => crickets-project-account
+### 2. 📡 Google Cloud Setup
 
-### Attribuer des rôles au compte de service ⇒ crickets-project-account
+1. **Create Storage Buckets **:
+   - `bkt-ranking-data-ycb` for data source (csv)
+   - `cricket_stats_dataflow` for dataflow
 
-Pour que le compte de service ait la permission d'interagir avec Google Cloud Storage, vous devez lui attribuer les rôles appropriés.
+The `cricket_stats_dataflow` bucket contains the following directories and files:
 
-Lors de la création du compte de service, dans la section "Accorder des rôles à ce compte de service", sélectionnez un rôle. Pour le stockage, vous pouvez utiliser un des rôles suivants : - **Storage Object Admin** : Pour avoir un contrôle complet sur les objets dans les buckets.
+    - config/
+      - `config.ini`: Configuration settings for data processing.
 
-- Une fois le compte de service créé, vous serez redirigé vers la page du compte de service. Cliquez sur Générer une nouvelle clé (JSON)
+    - templates/
+      - `dataflow_template.py`: Python template for Apache Dataflow jobs.
 
-Si ce n'est pas fait lors de la création, allez dans la section IAM
+    - staging
+      - Intermediate data storage for processing.
+
+    - tmp/
+      - Temporary files used during Dataflow execution.
+
+2. **Enable the Google Cloud Storage API**.
+
+3. **Create a Service Account**:
+   - Name it `crickets-project-account`, and assign the following roles:
+     - `roles/storage.objectAdmin`: Full control over bucket objects.
+     - `roles/bigquery.admin`: Full BigQuery access.
+     - `roles/pubsub.publisher`: Access for Pub/Sub messaging.
+       ... (other roles for composer, ...)
+   - Generate a JSON key for the service account.
+
+### 3. Composer Environment
+
+1.  **Create a Cloud Composer environment**:
+
+    - Name it `crickets-project-composer-env`.
+
+2.  **Upload the following files in Composer env**:
+
+    ## 📂 DAG Structure
+
+    The `dags/` directory contains the following files and folders:
+
+        - `dag.py`: Main DAG definition file.
+
+        -  data
+          - (This folder can include data files used in your workflows.)
+
+        - config
+          - `gcs.conf`: Configuration file for Google Cloud Storage.
+          - `rapid-api.conf`: Configuration file for the Rapid API.
+
+        - scripts
+          - `api_data_to_gcs.py`: Script for retrieving data from the API and pushing it to GCS.
+
+### Cloud Function
+
+1. **Create a Cloud Function**:
+
+   - Name it `trigger_df_job`.
+
+2. **Set the Trigger Type**:
+
+   - Cloud Storage (event: `google.cloud.storage.object.v1.finalized`).
+
+3. **Assign the following roles**:
+   - `roles/logging.logWriter`: For logging.
+   - `roles/pubsub.publisher`: For triggering notifications.
+
+### Run the Pipeline
+
+1. **Push data to the GCS bucket**.
+2. **Monitor the Airflow DAG in Cloud Composer**.
+3. **Ensure that downstream services like Pub/Sub, Dataflow, and BigQuery execute as expected**.
 
 ## 📈 Data Collection
 
@@ -65,29 +123,11 @@ Code complet Python : Load data from API + Push to GCS => api_data_to_gcs.py
 
 👉 Cricbuzz API Documentation
 
-## Cloud Function => Dataflow => Cloud Composer
-
-1/ Composer
-
-- Créer un cloud composer environnement ⇒ crickets-project-composer-env (europe-west1)
-
-  Composer : Chargement des fichiers pour Airflow
-  Ajouter un dossier scripts (avec api_data_to_gcs.py) et le fichier dag.py
-
-- Cloud function ⇒ Créer une fonction trigger_df_job + Activer Cloud functions API
-  déclencheur de type Cloud Storage et évenement google.cloud.storage.object.v1.finalized
-  on choisit le bucket source qui nous intéresse => bkt-ranking-data-ycb
-
-  ### Rôles nécessaires pour le compte de service pour utiliser cloud function
-
-- roles/artifactregistry.createOnPushWriter
-- roles/logging.logWriter
-- roles/pubsub.publisher
-- roles/cloudbuild.builds.builder on cricket-stats-etl-gcp => pour déployer la function
-
-  Ensuite, on ajoute le code dans main.py et la lib google-api-python-client dans requirements.txt
-
 ## 📊 Looker Studio Dashboard
+
+- analytics table (BigQuery)
+
+![Project Architecture](images/dashboard.png)
 
 Once the data is collected and processed, you can explore our interactive dashboard built with Looker Studio. The dashboard provides insights and visualizations of the cricket match data, including:
 
@@ -105,8 +145,8 @@ Contributions are welcome! Feel free to open an issue or submit a pull request.
 
 ## 👤 Authors
 
-Your Name
-Additional contributors or inspirations can be listed here.
+Youcef
+Inspirations => https://www.youtube.com/watch?v=UXJxcWgxwu0&t=516s
 
 ## 📝 License
 

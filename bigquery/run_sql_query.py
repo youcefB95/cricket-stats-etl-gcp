@@ -99,7 +99,7 @@ query_params = {
 #     params = query_params
 # )
 
-for table in ["player_dim","rankings","country_dim","date_dim"]: 
+for table in ["player_dim","rankings","country_dim","date_dim","analytics"]: 
        params = query_params
        params["table_name"] = table
        execute_dynamic_query_with_params(

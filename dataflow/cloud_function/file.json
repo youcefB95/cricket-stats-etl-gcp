@@ -1,0 +1,17 @@
+{"date": "2024-12-27 00:00:00", "date_id": 1, "hour": 0, "day_of_week": "Friday", "month": 12, "year": 2024}
+{"date": "2024-12-27 00:00:00", "date_id": 1, "hour": 0, "day_of_week": "Friday", "month": 12, "year": 2024}
+{"date": "2024-12-27 00:00:00", "date_id": 1, "hour": 0, "day_of_week": "Friday", "month": 12, "year": 2024}
+{"date": "2024-12-27 00:00:00", "date_id": 1, "hour": 0, "day_of_week": "Friday", "month": 12, "year": 2024}
+{"date": "2024-12-27 00:00:00", "date_id": 1, "hour": 0, "day_of_week": "Friday", "month": 12, "year": 2024}
+{"date": "2024-12-27 00:00:00", "date_id": 1, "hour": 0, "day_of_week": "Friday", "month": 12, "year": 2024}
+{"date": "2024-12-27 00:00:00", "date_id": 1, "hour": 0, "day_of_week": "Friday", "month": 12, "year": 2024}
+{"date": "2024-12-27 00:00:00", "date_id": 1, "hour": 0, "day_of_week": "Friday", "month": 12, "year": 2024}
+{"date": "2024-12-27 00:00:00", "date_id": 1, "hour": 0, "day_of_week": "Friday", "month": 12, "year": 2024}
+{"date": "2024-12-27 00:00:00", "date_id": 1, "hour": 0, "day_of_week": "Friday", "month": 12, "year": 2024}
+{"date": "2024-12-27 00:00:00", "date_id": 1, "hour": 0, "day_of_week": "Friday", "month": 12, "year": 2024}
+{"date": "2024-12-27 00:00:00", "date_id": 1, "hour": 0, "day_of_week": "Friday", "month": 12, "year": 2024}
+{"date": "2024-12-27 00:00:00", "date_id": 1, "hour": 0, "day_of_week": "Friday", "month": 12, "year": 2024}
+{"date": "2024-12-27 00:00:00", "date_id": 1, "hour": 0, "day_of_week": "Friday", "month": 12, "year": 2024}
+{"date": "2024-12-27 00:00:00", "date_id": 1, "hour": 0, "day_of_week": "Friday", "month": 12, "year": 2024}
+schema='date_id:INTEGER,date:DATETIME,day_of_week:STRING,month:INTEGER,year:INTEGER',  
+["date_id", "date", "day_of_week", "month", "year"]
