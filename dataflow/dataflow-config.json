@@ -1,0 +1,15 @@
+{
+  "GCS_LOCATION": "gs://cricket_stats_dataflow/templates/dataflow_template.py",
+  "PROJECT_ID": "cricket-stats-etl-gcp",
+  "STAGING_LOCATION": "gs://cricket_stats_dataflow/staging",
+  "TEMP_LOCATION": "gs://cricket_stats_dataflow/tmp",
+  "INPUT": "gs://bkt-ranking-data-ycb/batsmen_rankings.csv",
+  "OUTPUT": {
+    "player_dim": "cricket-stats-etl-gcp.cricket_dataset.player_dim",
+    "country_dim": "cricket-stats-etl-gcp.cricket_dataset.country_dim",
+    "date_dim": "cricket-stats-etl-gcp.cricket_dataset.date_dim",
+    "rankings": "cricket-stats-etl-gcp.cricket_dataset.rankings"
+  },
+  "JOB_NAME": "bq-load",
+  "REGION": "europe-west9"
+}

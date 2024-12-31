@@ -1,0 +1,16 @@
+id,rank,name,country,rating,points,lastUpdatedOn,trend,faceImageId,countryId,difference
+8359,1,Babar Azam,Pakistan,795,795,2024-12-27,Flat,352417,3,
+576,2,Rohit Sharma,India,765,765,2024-12-27,Flat,577755,2,
+11808,3,Shubman Gill,India,763,763,2024-12-27,Flat,577753,2,
+1413,4,Virat Kohli,India,746,746,2024-12-27,Flat,577572,2,
+10209,5,Heinrich Klaasen,South Africa,743,743,2024-12-27,Up,577487,11,8.0
+11130,6,Harry Tector,Ireland,737,737,2024-12-27,Down,244641,27,-1.0
+10713,7,Daryl Mitchell,New Zealand,706,706,2024-12-27,Down,351601,13,-1.0
+13213,8,Rahmanullah Gurbaz,Afghanistan,672,672,2024-12-27,Down,352440,96,-1.0
+10384,8,Shai Hope,West Indies,672,672,2024-12-27,Up,170814,10,1.0
+13682,10,Pathum Nissanka,Sri Lanka,671,671,2024-12-27,Down,351889,5,-2.0
+10934,11,Charith Asalanka,Sri Lanka,660,660,2024-12-27,Down,351873,5,-1.0
+9428,12,Shreyas Iyer,India,658,658,2024-12-27,Down,352480,2,-1.0
+8497,13,Travis Head,Australia,657,657,2024-12-27,Down,332908,4,-1.0
+8733,14,KL Rahul,India,644,644,2024-12-27,Up,577534,2,2.0
+9554,15,Rassie van der Dussen,South Africa,629,629,2024-12-27,Down,577488,11,-1.0

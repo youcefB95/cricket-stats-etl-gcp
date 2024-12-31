@@ -17,6 +17,18 @@ pip-wheel-metadata/
 *.local  
 *.log  
 
+# Dossiers et fichiers
+logs/
+plugins/
+dataflow/archive
+config/cricket_data_project_service_key.json
+config/rapid-api.conf
+config/archive
+iam/
+dags/archive/
+composer/dags/config/cricket_data_project_service_key.json
+composer/dags/config/rapid-api.conf
+
 # Jupyter Notebook Checkpoints  
 .ipynb_checkpoints/  
 # Pytest  

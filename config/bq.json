@@ -1,0 +1,48 @@
+{
+  "BigQuery Schema": [
+    {
+      "name": "id",
+      "type": "INT64"
+    },
+    {
+      "name": "rank",
+      "type": "STRING"
+    },
+    {
+      "name": "name",
+      "type": "STRING"
+    },
+    {
+      "name": "country",
+      "type": "STRING"
+    },
+    {
+      "name": "rating",
+      "type": "INT64"
+    },
+    {
+      "name": "points",
+      "type": "INT64"
+    },
+    {
+      "name": "lastUpdatedOn",
+      "type": "STRING"
+    },
+    {
+      "name": "trend",
+      "type": "STRING"
+    },
+    {
+      "name": "faceImageId",
+      "type": "INT64"
+    },
+    {
+      "name": "countryId",
+      "type": "INT64"
+    },
+    {
+      "name": "difference",
+      "type": "STRING"
+    }
+  ]
+}

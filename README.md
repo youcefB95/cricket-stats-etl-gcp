@@ -43,11 +43,49 @@ Follow the steps below to get this project up and running:
    git clone https://github.com/yourusername/cricket-statistics-pipeline.git
    ```
 
+   - Créer un bucket dans GCS => bkt-ranking-data-ycb
+   - Activer l'API de GCS
+   - Créer un compte de service pour ce projet => crickets-project-account
+
+### Attribuer des rôles au compte de service ⇒ crickets-project-account
+
+Pour que le compte de service ait la permission d'interagir avec Google Cloud Storage, vous devez lui attribuer les rôles appropriés.
+
+Lors de la création du compte de service, dans la section "Accorder des rôles à ce compte de service", sélectionnez un rôle. Pour le stockage, vous pouvez utiliser un des rôles suivants : - **Storage Object Admin** : Pour avoir un contrôle complet sur les objets dans les buckets.
+
+- Une fois le compte de service créé, vous serez redirigé vers la page du compte de service. Cliquez sur Générer une nouvelle clé (JSON)
+
+Si ce n'est pas fait lors de la création, allez dans la section IAM
+
 ## 📈 Data Collection
 
 Data collection is performed through a Python script that scrapes cricket statistics from the Cricbuzz API.
 
+Code complet Python : Load data from API + Push to GCS => api_data_to_gcs.py
+
 👉 Cricbuzz API Documentation
+
+## Cloud Function => Dataflow => Cloud Composer
+
+1/ Composer
+
+- Créer un cloud composer environnement ⇒ crickets-project-composer-env (europe-west1)
+
+  Composer : Chargement des fichiers pour Airflow
+  Ajouter un dossier scripts (avec api_data_to_gcs.py) et le fichier dag.py
+
+- Cloud function ⇒ Créer une fonction trigger_df_job + Activer Cloud functions API
+  déclencheur de type Cloud Storage et évenement google.cloud.storage.object.v1.finalized
+  on choisit le bucket source qui nous intéresse => bkt-ranking-data-ycb
+
+  ### Rôles nécessaires pour le compte de service pour utiliser cloud function
+
+- roles/artifactregistry.createOnPushWriter
+- roles/logging.logWriter
+- roles/pubsub.publisher
+- roles/cloudbuild.builds.builder on cricket-stats-etl-gcp => pour déployer la function
+
+  Ensuite, on ajoute le code dans main.py et la lib google-api-python-client dans requirements.txt
 
 ## 📊 Looker Studio Dashboard
 
