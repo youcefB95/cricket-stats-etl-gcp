@@ -52,9 +52,9 @@ class ProcessCSV(beam.DoFn):
         player_dim['first_name'] = player_dim['name'].apply(lambda x: x.split(" ")[0])  
         player_dim['last_name'] = player_dim['name'].apply(lambda x: " ".join(x.split(" ")[1:]))  
         player_dim.rename(columns={'id': 'player_id'}, inplace=True)  
-        player_dim = player_dim[['player_id', 'first_name', 'last_name']]  
+        player_dim = player_dim[['player_id', 'first_name', 'last_name']].drop_duplicates()  # Éviter les doublons  
 
-        country_dim = data[['countryId', 'country']].drop_duplicates().copy()  
+        country_dim = data[['countryId', 'country']].copy().drop_duplicates()  
         country_dim.rename(columns={'countryId': 'country_id'}, inplace=True)  
 
         data['lastUpdatedOn'] = pd.to_datetime(data['lastUpdatedOn'], errors='coerce')  
@@ -67,7 +67,7 @@ class ProcessCSV(beam.DoFn):
         date_dim['year'] = date_dim['date'].dt.year  
 
         # Filtrer les dates qui n'existent pas déjà  
-        new_dates = date_dim[~date_dim['date'].isin(self.existing_dates)]  
+        new_dates = date_dim[~date_dim['date'].isin(self.existing_dates)].drop_duplicates(subset=['date'])  
 
         if new_dates.empty:  # Vérifiez si new_dates est vide  
             logging.info("Aucune nouvelle date à insérer, aucune donnée ne sera retournée.")  
@@ -83,7 +83,7 @@ class ProcessCSV(beam.DoFn):
             yield {'type': 'player', 'data': r}  
         for r in country_dim.to_dict(orient='records'):  
             yield {'type': 'country', 'data': r}  
-        for r in new_dates.to_dict(orient='records'):  # Utiliser new_dates ici  
+        for r in new_dates.to_dict(orient='records'):  
             yield {'type': 'date', 'data': r}  
         for r in rankings.to_dict(orient='records'):  
             yield {'type': 'ranking', 'data': r}  
